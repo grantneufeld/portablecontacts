@@ -95,9 +95,14 @@ describe PortableContacts::Client do
   end
 
   describe "Rails Specific" do
-    require 'activesupport'
+    # FIXME: when ActiveSupport inclusion is working, this begin ... end sequence should be uncommented.
+    #begin
+    #  require 'active_support'
+    #rescue LoadError
+    #  require 'activesupport' # for Rails < 3.0
+    #end
 
-    it "should handle all parameters at once with string keys" do    
+    it "should handle all parameters at once with string keys" do
       @client.send(:options_for, 
       'fields'=>['name','emails','nickname','id'],
       'filter'=>{'by'=>'name','value'=>"Bob"},

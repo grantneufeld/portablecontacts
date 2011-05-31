@@ -1,6 +1,15 @@
 require 'uri'
 require 'json'
-require 'activesupport'
+# FIXME: when ActiveSupport inclusion is working, this begin ... end sequence should be uncommented.
+#begin
+#  require 'active_support'
+#rescue LoadError
+#  require 'activesupport' # for Rails < 3.0
+#end
+# For some painfully, horribly, unknown reason, that is driving me to insanity,
+# ActiveSupport isn't properly loading for me when running the test specs.
+# So, I've commented out the require and pasted the code from ActiveSupport into the functions.
+
 module PortableContacts
   
   # This is the main PortableContacts Client.
@@ -61,7 +70,11 @@ module PortableContacts
     
     def options_for(options={})
       return "" if options.nil? || options.empty?
-      options.symbolize_keys! if options.respond_to? :symbolize_keys!
+      # FIXME: when ActiveSupport inclusion is working, the commented out line should replace the ones below it:
+      #options.symbolize_keys! if options.respond_to? :symbolize_keys!
+      options.keys.each do |key|
+        options[(key.to_sym rescue key) || key] = options.delete(key)
+      end
       "?#{(fields_options(options[:fields])+filter_options(options[:filter])+sort_options(options[:sort])+pagination_options(options)).sort.join("&")}"
     end
     
@@ -175,7 +188,9 @@ module PortableContacts
     
     
     def [](key)
-      @data[key.to_s.camelize(:lower)]
+      # FIXME: when ActiveSupport inclusion is working, the commented out line should replace the one below it:
+      #@data[key.to_s.camelize(:lower)]
+      @data[Inflector.camelize(key.to_s, false)]
     end
     
     # primary email address
@@ -199,7 +214,9 @@ module PortableContacts
     end
     
     def respond_to?(method)
-      ENTRY_FIELDS.include?(method) || @data.has_key?(method.to_s.camelize(:lower)) || super
+      # FIXME: when ActiveSupport inclusion is working, the commented out line should replace the one below it:
+      #ENTRY_FIELDS.include?(method) || @data.has_key?(method.to_s.camelize(:lower)) || super
+      ENTRY_FIELDS.include?(method) || @data.has_key?(Inflector.camelize(method.to_s, false)) || super
     end
   end
   
@@ -215,4 +232,15 @@ module PortableContacts
 
   end
   
+  # FIXME: when ActiveSupport inclusion is working, delete this mini Inflector class
+  class Inflector
+    # straight copy from ActiveSupport::Inflector
+    def self.camelize(lower_case_and_underscored_word, first_letter_in_uppercase = true)
+      if first_letter_in_uppercase
+        lower_case_and_underscored_word.to_s.gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase }
+      else
+        lower_case_and_underscored_word.to_s[0].chr.downcase + camelize(lower_case_and_underscored_word)[1..-1]
+      end
+    end
+  end
 end
