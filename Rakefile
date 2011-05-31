@@ -8,12 +8,12 @@ begin
     gem.summary = %Q{Portable Contacts client for Ruby}
     gem.description = %Q{A client library for the portable contacts standard}
     gem.email = "pelleb@gmail.com"
-    gem.homepage = "http://github.com/pelle/portablecontacts"
-    gem.authors = ["Pelle Braendgaard"]
+    gem.homepage = "http://github.com/grantneufeld/portablecontacts"
+    gem.authors = ["Pelle Braendgaard","Grant Neufeld"]
     gem.rubyforge_project = "portablecontact"
     gem.add_dependency('oauth', '>= 0.3.6')
     gem.add_dependency('json')
-    gem.add_development_dependency "rspec"
+    gem.add_development_dependency("rspec", '>= 2.0.0')
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::RubyforgeTasks.new do |rubyforge|
